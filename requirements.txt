@@ -1,7 +1,6 @@
 flask
-flask-socketio
-eventlet
+flask-session
 requests
+gunicorn
 pandas
 reportlab
-gunicorn
