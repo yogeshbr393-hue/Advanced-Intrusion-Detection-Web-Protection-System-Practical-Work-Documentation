@@ -1,222 +1,114 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
-import sqlite3
-import os
 import random
 import time
+from datetime import datetime
 
 app = Flask(__name__)
 
-# =========================
-# SESSION CONFIG
-# =========================
-
-app.config["SECRET_KEY"] = "sentinelshield_secret_key"
+app.config["SECRET_KEY"] = "sentinelshield"
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
-# =========================
-# LOGIN CREDENTIALS
-# =========================
-
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
 
-# =========================
-# DATABASE CREATE
-# =========================
+attack_count = 0
 
-def create_database():
+threat_logs = [
+    {"ip": "192.168.1.1", "status": "SAFE", "country": "India"},
+    {"ip": "45.33.21.10", "status": "BLOCKED", "country": "Russia"},
+    {"ip": "172.16.0.5", "status": "SAFE", "country": "USA"},
+]
 
-    conn = sqlite3.connect("sentinelshield.db")
-    cursor = conn.cursor()
+chatbot_responses = {
+    "hello": "Hello Admin. SentinelShield AI is active.",
+    "attack": "No critical attacks detected currently.",
+    "status": "Firewall and IDS systems are active.",
+    "help": "Available commands: hello, attack, status"
+}
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS logs(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ip TEXT,
-        status TEXT,
-        country TEXT,
-        time TEXT
-    )
-    """)
 
-    conn.commit()
-    conn.close()
-
-create_database()
-
-# =========================
-# HOME PAGE
-# =========================
-
-@app.route('/')
+@app.route("/")
 def home():
-    return redirect('/login')
+    return redirect("/login")
 
-# =========================
-# LOGIN PAGE
-# =========================
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
-    if request.method == 'POST':
+    if request.method == "POST":
 
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
 
-            session['user'] = username
-
-            return redirect('/dashboard')
+            session["user"] = username
+            return redirect("/dashboard")
 
         else:
-            return """
-            <h2>Invalid Username or Password</h2>
-            <a href='/login'>Try Again</a>
-            """
+            return render_template("login.html", error="Invalid Credentials")
 
-    return """
+    return render_template("login.html")
 
-    <html>
 
-    <head>
-
-    <title>SentinelShield Login</title>
-
-    <style>
-
-    body{
-        background:#07172a;
-        color:white;
-        font-family:Arial;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        height:100vh;
-    }
-
-    .box{
-        background:#16253d;
-        padding:40px;
-        border-radius:10px;
-        width:300px;
-    }
-
-    input{
-        width:100%;
-        padding:10px;
-        margin-top:10px;
-        border:none;
-        border-radius:5px;
-    }
-
-    button{
-        width:100%;
-        padding:10px;
-        margin-top:20px;
-        background:#38bdf8;
-        border:none;
-        color:black;
-        font-weight:bold;
-        border-radius:5px;
-    }
-
-    h1{
-        color:#38bdf8;
-    }
-
-    </style>
-
-    </head>
-
-    <body>
-
-        <div class="box">
-
-            <h1>SentinelShield</h1>
-
-            <form method="POST">
-
-                <input type="text" name="username" placeholder="Username" required>
-
-                <input type="password" name="password" placeholder="Password" required>
-
-                <button type="submit">Login</button>
-
-            </form>
-
-        </div>
-
-    </body>
-
-    </html>
-
-    """
-
-# =========================
-# DASHBOARD
-# =========================
-
-@app.route('/dashboard')
+@app.route("/dashboard")
 def dashboard():
 
-    if 'user' not in session:
-        return redirect('/login')
+    if "user" not in session:
+        return redirect("/login")
 
-    ai_alerts = [
-        "AI engine reports system operating normally",
-        "Firewall active and protecting server",
-        "No SQL injection detected",
-        "Threat monitoring enabled",
-        "Intrusion Detection System Online"
-    ]
+    global attack_count
 
-    logs = [
+    attack_count += random.randint(1, 5)
 
-        {
-            "ip":"192.168.1.1",
-            "status":"SAFE",
-            "country":"India"
-        },
+    packet_data = []
 
-        {
-            "ip":"45.33.21.10",
-            "status":"BLOCKED",
-            "country":"Russia"
-        },
+    for i in range(10):
+        packet_data.append({
+            "source": f"192.168.0.{random.randint(1,255)}",
+            "destination": f"10.0.0.{random.randint(1,255)}",
+            "protocol": random.choice(["TCP", "UDP", "HTTP"]),
+            "status": random.choice(["SAFE", "SUSPICIOUS"])
+        })
 
-        {
-            "ip":"172.16.0.5",
-            "status":"SAFE",
-            "country":"USA"
-        }
-
-    ]
+    ml_prediction = random.choice([
+        "Low Threat",
+        "Medium Threat",
+        "High Threat"
+    ])
 
     return render_template(
-        'dashboard.html',
-        ai_alerts=ai_alerts,
-        logs=logs
+        "dashboard.html",
+        attack_count=attack_count,
+        threat_logs=threat_logs,
+        packet_data=packet_data,
+        ml_prediction=ml_prediction,
+        current_time=datetime.now()
     )
 
-# =========================
-# LOGOUT
-# =========================
 
-@app.route('/logout')
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+
+    message = request.form.get("message").lower()
+
+    response = chatbot_responses.get(
+        message,
+        "AI Assistant could not understand the command."
+    )
+
+    return jsonify({"response": response})
+
+
+@app.route("/logout")
 def logout():
 
     session.clear()
+    return redirect("/login")
 
-    return redirect('/login')
 
-# =========================
-# RUN APP
-# =========================
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
