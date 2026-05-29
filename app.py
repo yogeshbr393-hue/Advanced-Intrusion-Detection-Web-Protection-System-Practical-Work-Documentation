@@ -1,28 +1,26 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/')
 def login():
+    return render_template('login.html')
 
-    if request.method == "POST":
-
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        if username == "admin" and password == "admin":
-            return render_template("dashboard.html")
-
-        else:
-            return "Invalid Username or Password"
-
-    return render_template("login.html")
-
-
-@app.route("/dashboard")
+@app.route('/dashboard')
 def dashboard():
-    return render_template("dashboard.html")
+    return render_template('dashboard.html')
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
 
-if __name__ == "__main__":
+@app.route('/attack_logs')
+def attack_logs():
+    return render_template('attack_logs.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+if __name__ == '__main__':
     app.run(debug=True)
