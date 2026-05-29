@@ -2,19 +2,22 @@
 <html>
 <head>
     <title>SentinelShield Dashboard</title>
+
     <style>
+
         body{
-            background:#0f172a;
+            background:#07172a;
             color:white;
             font-family:Arial;
+            margin:0;
             padding:30px;
         }
 
         .card{
-            background:#1e293b;
+            background:#16253d;
             padding:20px;
             border-radius:10px;
-            margin-bottom:20px;
+            margin-top:20px;
         }
 
         h1{
@@ -33,10 +36,41 @@
         li{
             background:#334155;
             padding:10px;
-            margin:10px 0;
             border-radius:5px;
+            margin-top:10px;
         }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+        }
+
+        th{
+            background:#0f172a;
+            color:#38bdf8;
+            padding:12px;
+            border:1px solid #334155;
+        }
+
+        td{
+            padding:12px;
+            border:1px solid #334155;
+            text-align:center;
+        }
+
+        .safe{
+            color:#22c55e;
+            font-weight:bold;
+        }
+
+        .danger{
+            color:red;
+            font-weight:bold;
+        }
+
     </style>
+
 </head>
 
 <body>
@@ -44,13 +78,51 @@
     <h1>SentinelShield Dashboard</h1>
 
     <div class="card">
+
         <h2>AI Alerts</h2>
 
         <ul>
+
             {% for alert in ai_alerts %}
-                <li>{{ alert }}</li>
+            <li>✅ {{ alert }}</li>
             {% endfor %}
+
         </ul>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Live Threat Logs</h2>
+
+        <table>
+
+            <tr>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Country</th>
+            </tr>
+
+            <tr>
+                <td>192.168.1.1</td>
+                <td class="safe">SAFE</td>
+                <td>India</td>
+            </tr>
+
+            <tr>
+                <td>45.33.21.10</td>
+                <td class="danger">BLOCKED</td>
+                <td>Russia</td>
+            </tr>
+
+            <tr>
+                <td>172.16.0.5</td>
+                <td class="safe">SAFE</td>
+                <td>USA</td>
+            </tr>
+
+        </table>
+
     </div>
 
 </body>
