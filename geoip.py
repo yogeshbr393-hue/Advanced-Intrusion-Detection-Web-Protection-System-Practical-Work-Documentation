@@ -1,20 +1,14 @@
 import requests
 
-
-def get_ip_info(ip):
-
+def get_geo_location(ip):
     try:
-
-        response = requests.get(
-            f"http://ip-api.com/json/{ip}"
-        )
-
+        response = requests.get(f"http://ip-api.com/json/{ip}")
         data = response.json()
 
         return {
-            "country": data.get("country", "Unknown"),
-            "city": data.get("city", "Unknown"),
-            "isp": data.get("isp", "Unknown")
+            "country": data.get("country"),
+            "city": data.get("city"),
+            "isp": data.get("isp")
         }
 
     except:
