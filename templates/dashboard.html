@@ -1,129 +1,271 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>SentinelShield Dashboard</title>
 
-    <style>
+<title>SentinelShield Dashboard</title>
 
-        body{
-            background:#07172a;
-            color:white;
-            font-family:Arial;
-            margin:0;
-            padding:30px;
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        .card{
-            background:#16253d;
-            padding:20px;
-            border-radius:10px;
-            margin-top:20px;
-        }
+<style>
 
-        h1{
-            color:#38bdf8;
-        }
+body{
+    background:#06152d;
+    color:white;
+    font-family:Arial;
+    margin:0;
+    padding:20px;
+}
 
-        h2{
-            color:#22c55e;
-        }
+.card{
+    background:#12233d;
+    padding:20px;
+    margin-top:20px;
+    border-radius:12px;
+}
 
-        ul{
-            list-style:none;
-            padding:0;
-        }
+h1{
+    color:#00bfff;
+}
 
-        li{
-            background:#334155;
-            padding:10px;
-            border-radius:5px;
-            margin-top:10px;
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+}
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:20px;
-        }
+table,th,td{
+    border:1px solid #2f4f6f;
+}
 
-        th{
-            background:#0f172a;
-            color:#38bdf8;
-            padding:12px;
-            border:1px solid #334155;
-        }
+th,td{
+    padding:10px;
+    text-align:center;
+}
 
-        td{
-            padding:12px;
-            border:1px solid #334155;
-            text-align:center;
-        }
+.map{
+    position:relative;
+    height:350px;
+    background:black;
+    overflow:hidden;
+}
 
-        .safe{
-            color:#22c55e;
-            font-weight:bold;
-        }
+.attack-dot{
+    width:14px;
+    height:14px;
+    background:red;
+    border-radius:50%;
+    position:absolute;
+    animation:blink 1s infinite;
+}
 
-        .danger{
-            color:red;
-            font-weight:bold;
-        }
+@keyframes blink{
+    0%{opacity:1;}
+    50%{opacity:0.2;}
+    100%{opacity:1;}
+}
 
-    </style>
+.packet{
+    color:lime;
+    font-family:monospace;
+}
+
+.chat-box{
+    background:black;
+    padding:10px;
+    height:150px;
+    overflow:auto;
+}
+
+</style>
 
 </head>
 
 <body>
 
-    <h1>SentinelShield Dashboard</h1>
+<h1>SentinelShield Cyber Security Center</h1>
 
-    <div class="card">
+<div class="card">
 
-        <h2>AI Alerts</h2>
+<h2>Real-Time Attack Counter</h2>
 
-        <ul>
+<h1>{{ attack_count }}</h1>
 
-            {% for alert in ai_alerts %}
-            <li>✅ {{ alert }}</li>
-            {% endfor %}
+</div>
 
-        </ul>
+<div class="card">
 
-    </div>
+<h2>Machine Learning Threat Prediction</h2>
 
-    <div class="card">
+<h2 style="color:red;">{{ ml_prediction }}</h2>
 
-        <h2>Live Threat Logs</h2>
+</div>
 
-        <table>
+<div class="card">
 
-            <tr>
-                <th>IP Address</th>
-                <th>Status</th>
-                <th>Country</th>
-            </tr>
+<h2>Live Cyber Attack Chart</h2>
 
-            <tr>
-                <td>192.168.1.1</td>
-                <td class="safe">SAFE</td>
-                <td>India</td>
-            </tr>
+<canvas id="attackChart"></canvas>
 
-            <tr>
-                <td>45.33.21.10</td>
-                <td class="danger">BLOCKED</td>
-                <td>Russia</td>
-            </tr>
+</div>
 
-            <tr>
-                <td>172.16.0.5</td>
-                <td class="safe">SAFE</td>
-                <td>USA</td>
-            </tr>
+<div class="card">
 
-        </table>
+<h2>Live Hacker World Map</h2>
 
-    </div>
+<div class="map">
+
+{% for attack in world_attacks %}
+
+<div class="attack-dot"
+style="
+left:{{ attack.x }}px;
+top:{{ attack.y }}px;
+">
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Real Packet Sniffer</h2>
+
+{% for packet in packet_data %}
+
+<p class="packet">
+
+{{ packet.source }} →
+{{ packet.destination }}
+| {{ packet.protocol }}
+| {{ packet.status }}
+
+</p>
+
+{% endfor %}
+
+</div>
+
+<div class="card">
+
+<h2>AI Chatbot Assistant</h2>
+
+<div class="chat-box" id="chatbox"></div>
+
+<input type="text" id="message">
+
+<button onclick="sendMessage()">Send</button>
+
+</div>
+
+<div class="card">
+
+<h2>Email Alerts</h2>
+
+<a href="/send-alert">
+<button>Send Alert</button>
+</a>
+
+</div>
+
+<div class="card">
+
+<h2>PDF Report Generator</h2>
+
+<a href="/generate-report">
+<button>Download PDF Report</button>
+</a>
+
+</div>
+
+<div class="card">
+
+<h2>Threat Logs</h2>
+
+<table>
+
+<tr>
+<th>IP</th>
+<th>Status</th>
+<th>Country</th>
+</tr>
+
+{% for log in threat_logs %}
+
+<tr>
+
+<td>{{ log.ip }}</td>
+<td>{{ log.status }}</td>
+<td>{{ log.country }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+<script>
+
+const ctx = document.getElementById('attackChart');
+
+new Chart(ctx, {
+
+type:'line',
+
+data:{
+
+labels:['Mon','Tue','Wed','Thu','Fri','Sat'],
+
+datasets:[{
+
+label:'Cyber Attacks',
+
+data:[12,19,3,25,18,40],
+
+borderColor:'red'
+
+}]
+
+}
+
+});
+
+function sendMessage(){
+
+let message =
+document.getElementById("message").value;
+
+fetch("/chatbot",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+
+body:"message=" + message
+
+})
+
+.then(response=>response.json())
+
+.then(data=>{
+
+document.getElementById("chatbox").innerHTML +=
+"<p><b>You:</b> " + message + "</p>";
+
+document.getElementById("chatbox").innerHTML +=
+"<p><b>AI:</b> " + data.response + "</p>";
+
+});
+
+}
+
+</script>
 
 </body>
 </html>
