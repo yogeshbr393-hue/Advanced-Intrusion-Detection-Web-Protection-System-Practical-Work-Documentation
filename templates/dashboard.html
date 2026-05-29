@@ -1,26 +1,149 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+
+<title>Cyber Security Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+    margin:0;
+    padding:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:10px;
+}
+
+h1{
+    color:cyan;
+}
+
+button{
+    padding:10px 20px;
+    background:cyan;
+    border:none;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #334155;
+    padding:10px;
+    text-align:center;
+}
+
+</style>
+
 </head>
 
-<body style="background:black;color:white;text-align:center;padding-top:100px;">
+<body>
 
-    <h1>Intrusion Detection Dashboard</h1>
+<h1>SentinelShield Dashboard</h1>
 
-    <p>Welcome Admin</p>
+<div class="card">
 
-    <br>
+<h2>System Status</h2>
 
-    <a href="/admin">
-        <button style="padding:10px 20px;">Open Admin Panel</button>
-    </a>
+<p>Firewall: ACTIVE</p>
+<p>AI Detection: RUNNING</p>
+<p>Threat Monitoring: ENABLED</p>
 
-    <br><br>
+</div>
 
-    <a href="/">
-        <button style="padding:10px 20px;">Logout</button>
-    </a>
+<div class="card">
+
+<h2>Live Attack Statistics</h2>
+
+<canvas id="attackChart"></canvas>
+
+</div>
+
+<div class="card">
+
+<h2>Recent Attack Logs</h2>
+
+<table>
+
+<tr>
+<th>IP Address</th>
+<th>Attack Type</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>192.168.1.10</td>
+<td>DDoS</td>
+<td>Blocked</td>
+</tr>
+
+<tr>
+<td>10.0.0.25</td>
+<td>SQL Injection</td>
+<td>Detected</td>
+</tr>
+
+<tr>
+<td>172.16.5.12</td>
+<td>Brute Force</td>
+<td>Prevented</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>Navigation</h2>
+
+<a href="/admin">
+<button>Admin Panel</button>
+</a>
+
+<a href="/attack_logs">
+<button>Attack Logs</button>
+</a>
+
+<a href="/about">
+<button>About</button>
+</a>
+
+<a href="/">
+<button>Logout</button>
+</a>
+
+</div>
+
+<script>
+
+const ctx = document.getElementById('attackChart');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat'],
+        datasets: [{
+            label: 'Cyber Attacks',
+            data: [5, 12, 8, 15, 20, 10],
+            borderWidth: 2
+        }]
+    }
+});
+
+</script>
 
 </body>
 </html>
