@@ -2,5 +2,3 @@ flask
 flask-session
 requests
 gunicorn
-pandas
-reportlab
