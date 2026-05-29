@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SentinelShield Dashboard</title>
+    <style>
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Arial;
+            padding:30px;
+        }
+
+        .card{
+            background:#1e293b;
+            padding:20px;
+            border-radius:10px;
+            margin-bottom:20px;
+        }
+
+        h1{
+            color:#38bdf8;
+        }
+
+        h2{
+            color:#22c55e;
+        }
+
+        ul{
+            list-style:none;
+            padding:0;
+        }
+
+        li{
+            background:#334155;
+            padding:10px;
+            margin:10px 0;
+            border-radius:5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>SentinelShield Dashboard</h1>
+
+    <div class="card">
+        <h2>AI Alerts</h2>
+
+        <ul>
+            {% for alert in ai_alerts %}
+                <li>{{ alert }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</body>
+</html>
